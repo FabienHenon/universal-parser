@@ -1,0 +1,28 @@
+{
+  "name": "universal-parser",
+  "version": "1.0.0",
+  "description": "Universal parser to use with universal-lexer to get an AST",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FabienHenon/universal-parser.git"
+  },
+  "keywords": [
+    "parserr",
+    "lexer",
+    "ast",
+    "bnf"
+  ],
+  "author": "Fabien Henon",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/FabienHenon/universal-parser/issues"
+  },
+  "homepage": "https://github.com/FabienHenon/universal-parser#readme",
+  "dependencies": {
+    "yaml": "^1.10.2"
+  }
+}

@@ -1,0 +1,32 @@
+Tokens:
+  - type: TagEnd
+    value: ">"
+
+  - type: SingleTagEnd
+    value: "/>"
+
+  - type: StartTagName
+    regex: '(?<global>(<(?<value>(\w+))))'
+    regexFlags: "i"
+  
+  - type: EndTagName
+    regex: '(?<global>(</(?<value>(\w+))))'
+    regexFlags: "i"
+
+  - type: Attribute
+    regex: '(?<global>((?<name>([a-zA-Z_-]+))="(?<value>([^"]+))"))'
+    regexFlags: "i"
+
+  - type: Attribute
+    regex: "(?<global>((?<name>([a-zA-Z_-]+))=(?<value>([a-zA-Z0-9]+))))"
+    regexFlags: "i"
+
+  - type: NewLine
+    value: "\n"
+
+  - type: Space
+    regex: '\s+'
+
+  - type: String
+    regex: "[^<>\s]+"
+    regexFlags: "i"

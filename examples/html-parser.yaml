@@ -1,0 +1,100 @@
+root: Node
+lexerTokens:
+  - TagEnd
+  - SingleTagEnd
+  - StartTagName
+  - EndTagName
+  - Attribute
+  - NewLine
+  - Space
+  - String
+rules:
+  - type: Node
+    expression:
+      - StartTagName
+      - Attributes
+      - SpaceOrNewLineOrNothing
+      - TagEnd
+      - Content
+      - SpaceOrNewLineOrNothing
+      - EndTagName
+      - TagEnd
+    value: { type: "node", tag: "$1", attributes: "$2", content: "$5" }
+    valid: checkCurrentEndTag
+
+  - type: Node
+    expression:
+      - StartTagName
+      - Attributes
+      - SpaceOrNewLineOrNothing
+      - SingleTagEnd
+    value: { type: "node", tag: "$1", attributes: "$2", content: [] }
+
+  - type: Attributes
+    expression:
+      - SpaceOrNewLine
+      - AttributeOrAttrNoValue
+      - Attributes
+    value: ["$2", "$3"]
+
+  - type: Attributes
+    expression: []
+    value: []
+
+  - type: AttributeOrAttrNoValue
+    expression:
+      - Attribute
+    value: { name: "$1.name", value: "$1.value" }
+
+  - type: AttributeOrAttrNoValue
+    expression:
+      - String
+    value: { name: "$1", value: true }
+    valid: checkValidAttributeName
+
+  - type: Content
+    expression:
+      - SpaceOrNewLineOrNothing
+      - KindOfContent
+      - Content
+    value: ["$1", "$2", "$3"]
+
+  - type: Content
+    expression: []
+    value: []
+
+  - type: KindOfContent
+    expression:
+      - String
+    value: "$1"
+
+  - type: KindOfContent
+    expression:
+      - Node
+    value: "$1"
+
+  - type: KindOfContent
+    expression:
+      - Attribute
+    value: "$1.global"
+
+  - type: SpaceOrNewLine
+    expression:
+      - Space
+      - SpaceOrNewLineOrNothing
+    value: ["$1", "$2"]
+
+  - type: SpaceOrNewLine
+    expression:
+      - NewLine
+      - SpaceOrNewLineOrNothing
+    value: ["$1", "$2"]
+
+  - type: SpaceOrNewLineOrNothing
+    expression:
+      - SpaceOrNewLine
+    value: "$1"
+
+  - type: SpaceOrNewLineOrNothing
+    expression: []
+    value: ""
