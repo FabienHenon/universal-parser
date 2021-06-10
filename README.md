@@ -12,7 +12,7 @@ npm install universal-parser
 
 ## Usage
 
-```
+```js
 const UniversalLexer = require("universal-lexer");
 const UniversalParser = require("universal-parser");
 
