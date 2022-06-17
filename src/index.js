@@ -14,13 +14,27 @@ const compile = ({ root, rules, lexerTokens }, options) => {
       root
     );
 
+    if (result.found && result.currentTokenIdx < tokens.length - 1) {
+      return {
+        ...result,
+        found: false,
+        code: "file-not-fully-parsed",
+        tokensCount: tokens.length,
+        tokensToCount: tokens.slice(0, result.currentTokenIdx + 1),
+      };
+    }
+
     if (typeof options.normalizer !== "undefined") {
       return {
         ...result,
         result: options.normalizer(result.result),
+        tokensCount: tokens.length,
       };
     } else {
-      return result;
+      return {
+        ...result,
+        tokensCount: tokens.length,
+      };
     }
   };
 };
@@ -43,6 +57,13 @@ const parseFromContext = (
 ) => {
   const rulesForContext = getRulesForContext(currentContext, rules);
 
+  // console.log(
+  //   "parseFromContext",
+  //   contextHierarchy,
+  //   tokens[currentTokenIdx].type,
+  //   currentTokenIdx
+  // );
+
   if (rulesForContext.length == 0) {
     if (!currentRule) {
       // We cannot have a lexer token as the root of the rules
@@ -61,6 +82,7 @@ const parseFromContext = (
           code: "end-of-tokens",
           rule: currentRule,
           currentTokenIdx,
+          contextHierarchy,
         };
       }
 
@@ -71,6 +93,13 @@ const parseFromContext = (
             `Missing value attribute in rule ${currentRule.type}`
           );
         }
+
+        // console.log(
+        //   "MATCH",
+        //   contextHierarchy,
+        //   tokens[currentTokenIdx].type,
+        //   currentTokenIdx
+        // );
 
         return {
           found: true,
@@ -84,6 +113,7 @@ const parseFromContext = (
           rule: currentRule,
           context: currentContext,
           currentTokenIdx,
+          contextHierarchy,
         };
       }
     } else {
@@ -112,6 +142,7 @@ const parseFromContext = (
       code: "no-rule-matching",
       rule: currentRule,
       currentTokenIdx,
+      contextHierarchy,
     };
   }
 };
@@ -151,6 +182,7 @@ const parseFromRule = (
         rule: currentRule,
         expression: currentRule.expression[i],
         currentTokenIdx: initialTokenIdx,
+        contextHierarchy,
       };
     } else {
       currentTokenIdx = result.currentTokenIdx;
@@ -167,6 +199,7 @@ const parseFromRule = (
       if (
         options.validations[currentRule.valid](result, results, currentRule)
       ) {
+        // console.log("MATCH after validation", contextHierarchy);
         return {
           found: true,
           currentTokenIdx: currentTokenIdx,
@@ -178,6 +211,7 @@ const parseFromRule = (
           code: "validation-func-returns-false",
           rule: currentRule,
           currentTokenIdx: initialTokenIdx,
+          contextHierarchy,
         };
       }
     } else {
@@ -186,6 +220,7 @@ const parseFromRule = (
       );
     }
   } else {
+    // console.log("MATCH after expression", contextHierarchy);
     return {
       found: true,
       currentTokenIdx: currentTokenIdx,
@@ -196,8 +231,6 @@ const parseFromRule = (
 
 const getRulesForContext = (context, rules) =>
   rules.filter(({ type }) => type == context);
-
-const getTokenValue = (token, attr) => token[attr];
 
 const transformRuleValues = (results, value) =>
   extractVariablesInJson(value, results);
