@@ -79,7 +79,7 @@ rules:
   - `type`: The name of the rule. Used to refer to the rule. Several rules can have the same name. In this case that means that a rule can be defined in different ways
   - `expression`: The list of rules and tokens that composes this rule. A rule is matched only if all items of the expression are matched
   - `value`: The AST to return when the rule matches. This can be any valid JSON. Strings like `"$1"`, `"$2"`, ... `"$n"` will be replace by the value of the rule of token in the expression that corresponds (**We start with 1, not 0**). In [universal-lexer](https://github.com/rangoo94/universal-lexer) you can customize how you build your tokens like this: `regex: '(?<global>((?<name>([a-zA-Z_-]+))="(?<value>([^"]+))"))'`. Which means your token will have 3 values defined in the properties: `global`, `name` and `value`. Thus, in universal-parser you can write `$1.global` which will look for the `global` property of your token (example: `value: {name: "$1.name", value: "$1.value"}`). By default, we look for the `value` property (which is also the default for [universal-lexer](https://github.com/rangoo94/universal-lexer))
-  - `valid`: (_optional_) Defines the name of a function you will pass with the options to the `comipile` function and that will check the validity of the rule after it has been parsed. (This is usefull if you want to check some values after the parsing of the rule)
+  - `valid`: (_optional_) Defines the name of a function you will pass with the options to the `compile` function and that will check the validity of the rule after it has been parsed. (This is usefull if you want to check some values after the parsing of the rule)
 
 ### Functions
 
@@ -89,6 +89,51 @@ rules:
 - `compileFromFile`: Returns a function that you must call with the tokens returned by the lexer. Parameters:
   - `file`: The file containing the rules to use for parsing
   - `options`: (_optional_) Options
+
+The return value of the `compile` function is an object like this:
+
+```js
+{
+  // Success or not
+  found: true | false,
+  // The reesult structure, constructed from your rules
+  result: { type: "node", tag: "div"},
+  // Error codes
+  code: "file-not-fully-parsed" | "end-of-tokens" | "token-not-matching" | "no-rule-matching" | "expression-not-matching" | "validation-func-returns-false",
+  // Total number of tokens
+  tokensCount: 234,
+  // The list of tokens parsed
+  tokensToCount: [
+    {
+      "type": "StartTagName",
+      "data": {
+        "global": "<div",
+        "value": "div"
+      },
+      "start": 0,
+      "end": 4
+    },
+    {
+      "type": "NewLine",
+      "data": {
+        "value": "\n"
+      },
+      "start": 4,
+      "end": 5
+    }
+  ],
+  // The current rule where parsing stopped
+  rule: "StartTagName",
+  // The current context where parsing stopped
+  context: currentContext,
+  // The current expression where parsing stopped
+  expression: "Node",
+  // Index of the last parsed token
+  currentTokenIdx: 234,
+  // The current hierarchy
+  contextHierarchy: "Node.StartTagName"
+}
+```
 
 ### Options
 

@@ -20,4 +20,4 @@ const parse = () => {
   return templateParser(tokens.tokens);
 };
 
-console.log(parse());
+console.log(JSON.stringify(parse(), null, 2));
