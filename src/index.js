@@ -252,19 +252,33 @@ const extractVariablesInJson = (obj, results) => {
   }
 };
 
-const isVariable = (v) => /^\$[0-9]+(\.[a-zA-Z0-9]+)?$/.test(v);
+const isVariable = (v) => /\$[0-9]+(\.[a-zA-Z0-9]+)?/.test(v);
 
 const resolveVar = (v, results) => {
-  const matches = v.match(/^\$([0-9]+)(\.([a-zA-Z0-9]+))?$/);
-  const idx = parseInt(matches[1]) - 1;
-  const attr = matches[3];
-  const result = results[idx];
-  if (attr) {
-    return result.data[attr];
-  } else if (typeof result.data !== "undefined") {
-    return result.data.value;
+  const varMatches = v.match(/\$[0-9]+(\.[a-zA-Z0-9]+)?/g);
+  const matches = varMatches.map((match) => {
+    const vars = match.match(/^\$([0-9]+)(\.([a-zA-Z0-9]+))?$/);
+    const idx = parseInt(vars[1]) - 1;
+    const attr = vars[3];
+    const result = results[idx];
+    if (attr) {
+      return result.data[attr];
+    } else if (typeof result.data !== "undefined") {
+      return result.data.value;
+    } else {
+      return result;
+    }
+  });
+  // If all values are strings, we insert them
+  if (matches.every((val) => typeof val === "string")) {
+    return varMatches.reduce(
+      (finalResult, varMatch, index) =>
+        finalResult.replace(varMatch, matches[index]),
+      v
+    );
   } else {
-    return result;
+    // If all values are not strings, we return them as an array (except if there is only 1 object)
+    return matches.length > 1 ? matches : matches[0];
   }
 };
 

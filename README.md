@@ -17,7 +17,10 @@ const UniversalLexer = require("universal-lexer");
 const UniversalParser = require("universal-parser");
 
 // Compile the lexer and the parser
-const templateLexer = UniversalLexer.compileFromFile("./lexers/html.yaml", true);
+const templateLexer = UniversalLexer.compileFromFile(
+  "./lexers/html.yaml",
+  true
+);
 const templateParser = UniversalParser.compileFromFile("./parsers/html.yaml");
 
 // First, tokenize the code with universal-lexer
@@ -55,13 +58,13 @@ rules:
     expression:
       - Space
       - SpaceOrNewLineOrNothing
-    value: ["$1", "$2"]
+    value: "$1$2"
 
   - type: SpaceOrNewLine
     expression:
       - NewLine
       - SpaceOrNewLineOrNothing
-    value: ["$1", "$2"]
+    value: "$1$2"
 
   - type: SpaceOrNewLineOrNothing
     expression:
@@ -78,7 +81,7 @@ rules:
 - `rules`: The list of rules (the order is important):
   - `type`: The name of the rule. Used to refer to the rule. Several rules can have the same name. In this case that means that a rule can be defined in different ways
   - `expression`: The list of rules and tokens that composes this rule. A rule is matched only if all items of the expression are matched
-  - `value`: The AST to return when the rule matches. This can be any valid JSON. Strings like `"$1"`, `"$2"`, ... `"$n"` will be replace by the value of the rule of token in the expression that corresponds (**We start with 1, not 0**). In [universal-lexer](https://github.com/rangoo94/universal-lexer) you can customize how you build your tokens like this: `regex: '(?<global>((?<name>([a-zA-Z_-]+))="(?<value>([^"]+))"))'`. Which means your token will have 3 values defined in the properties: `global`, `name` and `value`. Thus, in universal-parser you can write `$1.global` which will look for the `global` property of your token (example: `value: {name: "$1.name", value: "$1.value"}`). By default, we look for the `value` property (which is also the default for [universal-lexer](https://github.com/rangoo94/universal-lexer))
+  - `value`: The AST to return when the rule matches. This can be any valid JSON. Strings like `"$1"`, `"$2"`, ... `"$n"` will be replace by the value of the rule of token in the expression that corresponds (**We start with 1, not 0**) You are allowed to provide values like `"My complex value $1 with $2.global"`. If the result values are strings they will be inserted in this value. If all values are not strings, an array with the results will be returned. In [universal-lexer](https://github.com/rangoo94/universal-lexer) you can customize how you build your tokens like this: `regex: '(?<global>((?<name>([a-zA-Z_-]+))="(?<value>([^"]+))"))'`. Which means your token will have 3 values defined in the properties: `global`, `name` and `value`. Thus, in universal-parser you can write `$1.global` which will look for the `global` property of your token (example: `value: {name: "$1.name", value: "$1.value"}`). By default, we look for the `value` property (which is also the default for [universal-lexer](https://github.com/rangoo94/universal-lexer))
   - `valid`: (_optional_) Defines the name of a function you will pass with the options to the `compile` function and that will check the validity of the rule after it has been parsed. (This is usefull if you want to check some values after the parsing of the rule)
 
 ### Functions

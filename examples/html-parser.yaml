@@ -82,13 +82,13 @@ rules:
     expression:
       - Space
       - SpaceOrNewLineOrNothing
-    value: ["$1", "$2"]
+    value: "$1$2"
 
   - type: SpaceOrNewLine
     expression:
       - NewLine
       - SpaceOrNewLineOrNothing
-    value: ["$1", "$2"]
+    value: "$1$2"
 
   - type: SpaceOrNewLineOrNothing
     expression:
