@@ -120,6 +120,7 @@ const parseFromContext = (
       throw new Error(`Unknown rule or token ${currentContext}`);
     }
   } else {
+    let finalResult = {};
     for (let i = 0; i < rulesForContext.length; i++) {
       // We parse deeper, trying all rules
       const result = parseFromRule(
@@ -132,12 +133,22 @@ const parseFromContext = (
         contextHierarchy
       );
 
+      finalResult = {
+        ...finalResult,
+        ...result,
+        errors: [
+          ...(finalResult.errors || []),
+          ...(result.error ? [result.error] : []),
+        ],
+      };
+
       if (result.found) {
         return result;
       }
     }
 
     return {
+      ...finalResult,
       found: false,
       code: "no-rule-matching",
       rule: currentRule,
@@ -161,6 +172,7 @@ const parseFromRule = (
     throw new Error(`Missing expression attribute in rule ${currentRule.type}`);
   }
   const results = [];
+  let finalResult = {};
   // We go through the expression
   for (let i = 0; i < currentRule.expression.length; i++) {
     // We parse deeper, trying all rules
@@ -175,8 +187,18 @@ const parseFromRule = (
       `${contextHierarchy}.${currentRule.expression[i]}`
     );
 
+    finalResult = {
+      ...finalResult,
+      ...result,
+      errors: [
+        ...(finalResult.errors || []),
+        ...(result.error ? [result.error] : []),
+      ],
+    };
+
     if (!result.found) {
       return {
+        ...finalResult,
         found: false,
         code: "expression-not-matching",
         rule: currentRule,
