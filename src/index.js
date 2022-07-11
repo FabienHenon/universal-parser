@@ -196,9 +196,12 @@ const parseFromRule = (
     if (
       typeof (options?.validations || {})[currentRule.valid] !== "undefined"
     ) {
-      if (
-        options.validations[currentRule.valid](result, results, currentRule)
-      ) {
+      const r = options.validations[currentRule.valid](
+        result,
+        results,
+        currentRule
+      );
+      if (r.success) {
         // console.log("MATCH after validation", contextHierarchy);
         return {
           found: true,
@@ -209,6 +212,7 @@ const parseFromRule = (
         return {
           found: false,
           code: "validation-func-returns-false",
+          error: r.error,
           rule: currentRule,
           currentTokenIdx: initialTokenIdx,
           contextHierarchy,

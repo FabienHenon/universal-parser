@@ -140,7 +140,7 @@ The return value of the `compile` function is an object like this:
 
 ### Options
 
-- `validations`: (_optional_) An object in which you will define all the functions you defined in the `valid` attribute of your rules. The function must return a boolean indicating if the rule should succeed or not, and will receive the following parameters:
+- `validations`: (_optional_) An object in which you will define all the functions you defined in the `valid` attribute of your rules. The function must return an object with a `success` boolean field indicating if the rule should succeed or not and eventually an `error` string field explaining why it failed. It will receive the following parameters:
   - `value`: The computed value from the rule (following your `value` attribute for the rule)
   - `results`: An array with results of all the items of the expression of your rule
   - `rule`: Your rule definition
