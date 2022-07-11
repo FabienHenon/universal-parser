@@ -138,6 +138,7 @@ const parseFromContext = (
         ...result,
         errors: [
           ...(finalResult.errors || []),
+          ...(result.errors || []),
           ...(result.error ? [result.error] : []),
         ],
       };
@@ -192,6 +193,7 @@ const parseFromRule = (
       ...result,
       errors: [
         ...(finalResult.errors || []),
+        ...(result.errors || []),
         ...(result.error ? [result.error] : []),
       ],
     };
