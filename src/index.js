@@ -143,7 +143,7 @@ const parseFromContext = (
         ],
       };
 
-      if (result.found) {
+      if (result.found || result.withError) {
         return result;
       }
     }
@@ -235,6 +235,7 @@ const parseFromRule = (
       } else {
         return {
           found: false,
+          withError: true,
           code: "validation-func-returns-false",
           error: r.error,
           rule: currentRule,
